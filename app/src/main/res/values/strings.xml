@@ -5,6 +5,10 @@
     <string name="documento_hint">Ingrese su Documento</string>
     <string name="strTipoNip">Tipo de Documento</string>
     <string name="Validar">Validar</string>
+    <string name="nombres">Ingrese Nombres</string>
+    <string name="apellidos">Ingrese Apellidos</string>
+    <string name="password">Ingrese Password</string>
+    <string name="confirmar" >Confirme el Password</string>
 
     <!--for facebook login-->
 

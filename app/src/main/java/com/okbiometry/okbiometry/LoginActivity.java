@@ -1,5 +1,8 @@
 package com.okbiometry.okbiometry;
 
+import android.app.Activity;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -7,13 +10,20 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.textfield.TextInputEditText;
@@ -45,7 +55,10 @@ public class LoginActivity extends AppCompatActivity {
     private TextInputEditText txtNip;
     private Button btnValidarUser;
     private int TipoDocumento;
-
+    private ProgressBar ProgressBar;
+    private ScrollView Principial;
+    private View barraLateral;
+    private ImageView ImgRegister;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +71,11 @@ public class LoginActivity extends AppCompatActivity {
         cbxTipoNip = findViewById(R.id.cbxTipoNip);//Tipo Nip
         txtNip = findViewById(R.id.txtNip); // Nip del Usuario
         btnValidarUser = findViewById(R.id.cirLoginButton);
+        ProgressBar = findViewById(R.id.progressBarLogin);
+        Principial =  findViewById(R.id.RlyPrincipial);
+        barraLateral =  findViewById(R.id.barraLateral);
+        ImgRegister =  findViewById(R.id.ImageRegister);
+
         txtNip.requestFocus();
 
         try{
@@ -72,16 +90,18 @@ public class LoginActivity extends AppCompatActivity {
             public void onClick(View view) {
 
                 try {
-                    if (TextUtils.isEmpty(txtNip.getText())){
+                    if (TextUtils.isEmpty(txtNip.getText()) ){
                         txtNip.requestFocus();
                         txtNip.setError(clsMensajes.Msg_CampoRequerido);
-                         TipoDocumento = Integer.parseInt(cbxTipoNip.getSelectedItem().toString());
+
                     }else{
+
+
                         UserLogin(txtNip.getText().toString().trim(),TipoDocumento);
                     }
 
                 }catch (Exception e){
-                    clsMsgbox.ShowAlert(LoginActivity.this,clsMensajes.Msg_ConsultarUsuario,getString(R.string.app_name));
+                    clsMsgbox.ShowAlert(LoginActivity.this,e.getMessage(),getString(R.string.app_name));
                 }
 
             }
@@ -90,7 +110,7 @@ public class LoginActivity extends AppCompatActivity {
         cbxTipoNip.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
                 String Valor = parent.getItemAtPosition(pos).toString();
-                Toast.makeText(LoginActivity.this, Valor, Toast.LENGTH_SHORT).show();
+            //    Toast.makeText(LoginActivity.this, Valor, Toast.LENGTH_SHORT).show();
                 TipoDocumento = DocumentType.BuscarTipoNipDescri(Valor,ListaTipoNip);
             }
 
@@ -117,12 +137,31 @@ public class LoginActivity extends AppCompatActivity {
 
     }
 
+    public void onClickValidar(View View){
+        try {
+
+            if (TextUtils.isEmpty(txtNip.getText())){
+                txtNip.requestFocus();
+                txtNip.setError(clsMensajes.Msg_CampoRequerido);
+
+            }else{
+
+                UserLogin(txtNip.getText().toString().trim(),TipoDocumento);
+            }
+
+        }catch (Exception e){
+            clsMsgbox.ShowAlert(LoginActivity.this,e.getMessage(),getString(R.string.app_name));
+        }
+
+    }
+
     private void UserLogin(final String strNip, final int strTipo){
         class UserLoginClass extends AsyncTask<String, Void, Void> {
 
             @Override
             protected void onPreExecute() {
                 super.onPreExecute();
+                hideView();
 
             }
 
@@ -163,12 +202,15 @@ public class LoginActivity extends AppCompatActivity {
             call.enqueue(new Callback<Object>() {
                 @Override
                 public void onResponse(Call<Object> call, Response<Object> response) {
+                    showView();
 
                         if (response.isSuccessful()){
                             try {
+
                                 JsonObject=new JSONObject(new Gson().toJson(response.body()));
                                 Log.e("TAG", "onResponse: "+JsonObject );
                                 Toast.makeText(LoginActivity.this, "El Cliente Existe", Toast.LENGTH_SHORT).show();
+                                startActivity(new Intent(LoginActivity.this,MainActivity.class));
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
@@ -178,7 +220,29 @@ public class LoginActivity extends AppCompatActivity {
                                 JSONObject jObjError = new JSONObject(response.errorBody().string());
                                 if (jObjError.getString("isError").equals("true")){
                                     String error=jObjError.getJSONObject("responseException").getString("exceptionMessage");
-                                    clsMsgbox.ShowAlert(LoginActivity.this,error,"Aviso");
+
+                                    AlertDialog.Builder builder = new AlertDialog.Builder(LoginActivity.this);
+
+                                    builder.setTitle("El usuario no existe");
+                                    builder.setMessage("¿Desea Registrarte?");
+
+                                    builder.setPositiveButton("ACEPTAR", new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog, int id) {
+                                            // User clicked OK button
+                                            startActivity(new Intent(LoginActivity.this,RegisterActivity.class));
+                                            overridePendingTransition(R.anim.slide_in_right,R.anim.stay);
+                                        }
+                                    });
+                                    builder.setNegativeButton("CANCELAR", new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog, int id) {
+                                            // User clicked OK button
+
+                                        }
+                                    });
+
+                                    AlertDialog dialog = builder.create();
+                                    dialog.show();;
+
                                 }
 
 
@@ -197,6 +261,19 @@ public class LoginActivity extends AppCompatActivity {
             e.printStackTrace();
         }
         return null;
+    }
+
+    private void showView(){
+        Principial.setVisibility(View.VISIBLE);
+        barraLateral.setVisibility(View.VISIBLE);
+        ProgressBar.setVisibility(View.GONE);
+    }
+
+    private void hideView(){
+        Principial.setVisibility(View.GONE);
+        barraLateral.setVisibility(View.GONE);
+
+        ProgressBar.setVisibility(View.VISIBLE);
     }
 
 

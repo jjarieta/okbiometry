@@ -20,7 +20,7 @@ android:layout_gravity="center">
         android:visibility="gone" />
 
     <ScrollView
-        android:id="@+id/v"
+        android:id="@+id/RlyPrincipial"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
@@ -71,14 +71,17 @@ android:layout_gravity="center">
 
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="match_parent"
+                android:layout_marginTop="10dp">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/txtNip"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="@string/documento_hint"
-                    android:inputType="number" />
+                    android:imeOptions="actionSend"
+                    android:inputType="number"
+                    android:onClick="onClickValidar" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <TextView
@@ -109,7 +112,8 @@ android:layout_gravity="center">
                 android:textAlignment="center"
                 android:textColor="@color/themeColor"
                 android:textSize="17sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:visibility="gone" />
 
 
             <LinearLayout
@@ -162,6 +166,7 @@ android:layout_gravity="center">
         android:visibility="visible" />
 
     <ImageView
+        android:id="@+id/ImageRegister"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
