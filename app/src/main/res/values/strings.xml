@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">OkBiometry</string>
+    <string name="login_email_hint">Email</string>
+    <string name="login_password_hint">Password</string>
+    <string name="documento_hint">Ingrese su Documento</string>
+    <string name="strTipoNip">Tipo de Documento</string>
+    <string name="Validar">Validar</string>
+
+    <!--for facebook login-->
+
+    <!--facebook login ends-->
+
+    <!--error messages-->
+
+</resources>
