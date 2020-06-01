@@ -18,4 +18,8 @@ public interface MyApiService {
 
     @POST("Login")
     Call<Object> Login(@Body JsonObject body);
+
+    @POST("User")
+    Call<Object> User(@Body JsonObject body);
+
 }

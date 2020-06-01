@@ -1,24 +1,22 @@
-package com.okbiometry.okbiometry;
+package com.okbiometry.okbiometry.activities;
 
+import android.Manifest;
 import android.app.Activity;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
-import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.Toast;
@@ -27,10 +25,11 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.textfield.TextInputEditText;
-import com.google.android.material.textfield.TextInputLayout;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import com.okbiometry.okbiometry.R;
 import com.okbiometry.okbiometry.clases.clsTiposNip;
+import com.okbiometry.okbiometry.clases.clsUsuario;
 import com.okbiometry.okbiometry.enums.DocumentType;
 import com.okbiometry.okbiometry.interfaces.MyApiService;
 import com.okbiometry.okbiometry.utilidades.clsMensajes;
@@ -48,9 +47,9 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class LoginActivity extends AppCompatActivity {
 
-    private static final String BASE_URL ="https://okbiometry20200520223931.azurewebsites.net/api/Account/";
+
     private JSONObject JsonObject;
-    private ArrayList<clsTiposNip> ListaTipoNip = new ArrayList<>();
+    public static ArrayList<clsTiposNip> ListaTipoNip = new ArrayList<>();
     private Spinner cbxTipoNip;
     private TextInputEditText txtNip;
     private Button btnValidarUser;
@@ -59,6 +58,7 @@ public class LoginActivity extends AppCompatActivity {
     private ScrollView Principial;
     private View barraLateral;
     private ImageView ImgRegister;
+    public static clsUsuario ObjUsuario = new clsUsuario();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,6 +78,14 @@ public class LoginActivity extends AppCompatActivity {
 
         txtNip.requestFocus();
 
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+            if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED && checkSelfPermission(Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_DENIED) {
+                Log.d("permission", "permission denied to WRITE_EXTERNAL_STORAGE - requesting it");
+                String[] permissions = {Manifest.permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.RECORD_AUDIO};
+                requestPermissions(permissions, 1);
+            }
+        }
+
         try{
             ObtenerTiposNip();
 
@@ -96,7 +104,7 @@ public class LoginActivity extends AppCompatActivity {
 
                     }else{
 
-
+                        hideKeyboard(LoginActivity.this);
                         UserLogin(txtNip.getText().toString().trim(),TipoDocumento);
                     }
 
@@ -123,7 +131,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void ObtenerTiposNip() {
-
+        ListaTipoNip.clear();
         for(int i = 0; i< DocumentType.values().length; i++) {
             clsTiposNip ObjTipoNip = new clsTiposNip(DocumentType.values()[i].getIntvalue(), DocumentType.values()[i].getStrDescripcion());
             ListaTipoNip.add(ObjTipoNip);
@@ -145,7 +153,7 @@ public class LoginActivity extends AppCompatActivity {
                 txtNip.setError(clsMensajes.Msg_CampoRequerido);
 
             }else{
-
+                hideKeyboard(this);
                 UserLogin(txtNip.getText().toString().trim(),TipoDocumento);
             }
 
@@ -187,7 +195,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private Void ValidarUsuario( ) {
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(BASE_URL)
+                .baseUrl(clsMensajes.BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         MyApiService apiInterface = retrofit.create(MyApiService.class);
@@ -209,8 +217,13 @@ public class LoginActivity extends AppCompatActivity {
 
                                 JsonObject=new JSONObject(new Gson().toJson(response.body()));
                                 Log.e("TAG", "onResponse: "+JsonObject );
-                                Toast.makeText(LoginActivity.this, "El Cliente Existe", Toast.LENGTH_SHORT).show();
-                                startActivity(new Intent(LoginActivity.this,MainActivity.class));
+                              if (JsonObject.getString("isError").equals("false")){
+                                    ObjUsuario.setDni(txtNip.getText().toString());
+
+                                    Toast.makeText(LoginActivity.this, "El Cliente Existe", Toast.LENGTH_SHORT).show();
+                                    startActivity(new Intent(LoginActivity.this,MainActivity.class));
+                                }
+
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
@@ -219,6 +232,9 @@ public class LoginActivity extends AppCompatActivity {
                             try {
                                 JSONObject jObjError = new JSONObject(response.errorBody().string());
                                 if (jObjError.getString("isError").equals("true")){
+                                    ObjUsuario.setDni(txtNip.getText().toString());
+                                    ObjUsuario.setTipoDni(String.valueOf(TipoDocumento));
+
                                     String error=jObjError.getJSONObject("responseException").getString("exceptionMessage");
 
                                     AlertDialog.Builder builder = new AlertDialog.Builder(LoginActivity.this);
@@ -276,5 +292,15 @@ public class LoginActivity extends AppCompatActivity {
         ProgressBar.setVisibility(View.VISIBLE);
     }
 
+    public static void hideKeyboard(Activity activity) {
+        InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        //Find the currently focused view, so we can grab the correct window token from it.
+        View view = activity.getCurrentFocus();
+        //If no view currently has focus, create a new one, just so we can grab a window token from it
+        if (view == null) {
+            view = new View(activity);
+        }
+        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+    }
 
 }

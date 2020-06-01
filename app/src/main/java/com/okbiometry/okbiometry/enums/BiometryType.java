@@ -4,22 +4,19 @@ import com.okbiometry.okbiometry.clases.clsTiposNip;
 
 import java.util.ArrayList;
 
-public enum DocumentType {
+public enum BiometryType {
 
-    CEDULA_CIUDADANIA(1,"Cédula de Ciudadania"),
-    CEDULA_EXTRANJERIA(2,"Cédula de Extranjeria"),
-    REGISTRO_CIVIL(3,"Registro Civil"),
-    TARJETA_IDENTIDAD(4,"Tarjeta de Identidad"),
-    PASAPORTE(4,"Pasaporte"),
-    ADULTO_SIN_IDENTIDAD(5,"Adulto Sin Identidad"),
-    MENOR_SIN_IDENTIDAD(6,"Menor Sin Identidad");
+    FingerPrint(1,"FingerPrint Biometry"),
+    Signature(2,"Signature Biometry"),
+    Face(3,"Face Biometry "),
+    Voice(4," Voice Biometry");
+
 
     private  int Intvalue;
     private String strDescripcion;
     private static int IdDoc;
-    private static String DescripcionDoc;
 
-    DocumentType(int value, String Descripcion) {
+    BiometryType(int value, String Descripcion) {
     this.Intvalue = value;
     this.strDescripcion = Descripcion;
     }
@@ -49,14 +46,6 @@ public enum DocumentType {
         }
        return IdDoc;
     }
-    public static String BuscarTipoNipCodigo(int Codigo, ArrayList<clsTiposNip> List){
 
-        for(int i= 0; i<List.size();i++){
-            if (List.get(i).getIdTipoNip()==(Codigo)){
-                DescripcionDoc = List.get(i).getDescripcion();
-            }
-        }
-        return DescripcionDoc;
-    }
 
 }

@@ -1,8 +1,10 @@
-package com.okbiometry.okbiometry;
+package com.okbiometry.okbiometry.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+
+import com.okbiometry.okbiometry.R;
 
 public class MainActivity extends AppCompatActivity {
 

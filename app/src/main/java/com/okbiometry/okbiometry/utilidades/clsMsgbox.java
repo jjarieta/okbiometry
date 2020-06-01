@@ -1,14 +1,10 @@
 package com.okbiometry.okbiometry.utilidades;
 
-import android.app.Activity;
+
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
-
 import androidx.appcompat.app.AlertDialog;
 
-import com.okbiometry.okbiometry.R;
-import com.okbiometry.okbiometry.RegisterActivity;
 
 
 public class clsMsgbox {
