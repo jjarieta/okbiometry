@@ -18,5 +18,6 @@
     <string name="activity_home_desc">Ha iniciado sesión con éxito con la autenticación de huellas dactilares</string>
     <string name="activity_home_note">Cierre y vuelva a abrir la aplicación para volver a ver la pantalla de autenticación de huellas dactilares</string>
     <string name="title_activity_voice">voice</string>
+    <string name="textograbar">PRESIONE EL BOTÓN Y LUEGO REPITA EL SIGUIENTE TEXTO</string>
 
 </resources>

@@ -32,6 +32,7 @@ import com.okbiometry.okbiometry.clases.clsTiposNip;
 import com.okbiometry.okbiometry.clases.clsUsuario;
 import com.okbiometry.okbiometry.enums.DocumentType;
 import com.okbiometry.okbiometry.interfaces.MyApiService;
+import com.okbiometry.okbiometry.utilidades.clsFiles;
 import com.okbiometry.okbiometry.utilidades.clsMensajes;
 import com.okbiometry.okbiometry.utilidades.clsMsgbox;
 
@@ -68,6 +69,9 @@ public class LoginActivity extends AppCompatActivity {
             getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
         }
         setContentView(R.layout.activity_login);
+
+       // clsFiles.getPrivateAlbumStorageDir(this,"Voz");
+
         cbxTipoNip = findViewById(R.id.cbxTipoNip);//Tipo Nip
         txtNip = findViewById(R.id.txtNip); // Nip del Usuario
         btnValidarUser = findViewById(R.id.cirLoginButton);

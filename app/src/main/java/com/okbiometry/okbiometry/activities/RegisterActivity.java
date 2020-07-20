@@ -10,7 +10,6 @@ import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -19,28 +18,22 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.Toast;
-
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.okbiometry.okbiometry.R;
 import com.okbiometry.okbiometry.clases.clsUsuario;
-import com.okbiometry.okbiometry.enums.DocumentType;
 import com.okbiometry.okbiometry.interfaces.MyApiService;
 import com.okbiometry.okbiometry.utilidades.clsMensajes;
 import com.okbiometry.okbiometry.utilidades.clsMsgbox;
-
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
-
 import static com.okbiometry.okbiometry.activities.LoginActivity.ListaTipoNip;
 import static com.okbiometry.okbiometry.utilidades.clsMensajes.Msg_Password;
 
@@ -55,7 +48,7 @@ public class RegisterActivity extends AppCompatActivity {
     private int TipoDocumento;
     private ScrollView scrollView;
     private LinearLayout lyprogreso;
-    private clsUsuario ObjUsuarios;
+    public static clsUsuario ObjUsuarios;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -110,7 +103,7 @@ public class RegisterActivity extends AppCompatActivity {
         lyprogreso =  findViewById(R.id.lyprogreso);
 
         editTextDni.setText(ObjUsuarios.getDni());
-        editTextDni.setEnabled(false);
+      //  editTextDni.setEnabled(false);
 
 
 
@@ -121,8 +114,8 @@ public class RegisterActivity extends AppCompatActivity {
 
 
 
-        Tiponip.setSelection(2);
-        Tiponip.setEnabled(false);
+        Tiponip.setSelection(Integer.parseInt(ObjUsuarios.getTipoDni()));
+      //  Tiponip.setEnabled(false);
         CheckConsentimiento.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -167,6 +160,10 @@ public class RegisterActivity extends AppCompatActivity {
 
                     if (ValidatePassword(editTextpass.getText().toString(),editTextpassConfirm.getText().toString())){
 
+                        ObjUsuarios.setDni(editTextDni.getText().toString());
+                        ObjUsuarios.setTipoDni(ObjUsuarios.getTipoDni());
+                        ObjUsuarios.setNombres(editTextNombres.getText().toString());
+                        ObjUsuarios.setApellidos(ediTexApellidos.getText().toString());
                         Intent intent = new Intent(getApplicationContext(), visorpdf.class);
                         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         startActivity(intent);
